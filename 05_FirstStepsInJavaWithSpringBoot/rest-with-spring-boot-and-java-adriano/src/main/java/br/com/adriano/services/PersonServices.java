@@ -1,11 +1,13 @@
 package br.com.adriano.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.adriano.exceptions.ResourceDuplicatedEmailException;
 import br.com.adriano.exceptions.ResourceNotFoundException;
 import br.com.adriano.models.Person;
 import br.com.adriano.reposotories.PersonRepository;
@@ -46,6 +48,12 @@ public class PersonServices {
 	
 	public Person create(Person person) {
 		logger.info("Method create");
+		
+		Optional<Person> savedPerson = repository.findByEmail(person.getEmail());
+		
+		if (savedPerson.isPresent()) {
+			throw new ResourceDuplicatedEmailException("Email already exists: " + person.getEmail(), new Throwable("Email already exists"));
+		}
 		return repository.save(person);
 	}
 	
