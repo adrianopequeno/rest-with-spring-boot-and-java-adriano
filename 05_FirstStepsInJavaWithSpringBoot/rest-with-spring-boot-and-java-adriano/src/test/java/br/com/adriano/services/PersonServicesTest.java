@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -156,5 +156,20 @@ public class PersonServicesTest {
 		assertEquals(person.getLastName(), updatePerson.getLastName());
 		assertEquals(person.getAddress(), updatePerson.getAddress());
 		assertEquals(person.getEmail(), updatePerson.getEmail());
+	}
+	
+	@DisplayName("JUnit test Given Person ID when Delete Person then do Nothing")
+	@Test
+	void testGivenPersonID_whenDeletePerson_thenDoNothing() {
+		// Given / Arrange
+		person.setId(1L);
+		given(repository.findById(anyLong())).willReturn(Optional.of(person));
+		willDoNothing().given(repository).delete(person);
+		
+		// When / Act
+		services.delete(person.getId());
+		
+		// Then / Assert
+		verify(repository, times(1)).delete(person);
 	}
 }
