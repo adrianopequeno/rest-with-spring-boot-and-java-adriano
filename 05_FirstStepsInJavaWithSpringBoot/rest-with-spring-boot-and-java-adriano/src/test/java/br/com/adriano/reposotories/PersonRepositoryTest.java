@@ -145,6 +145,26 @@ class PersonRepositoryTest {
 	    assertEquals(firstName, retrievedPerson.getFirstName());
 	    assertEquals(lastName, retrievedPerson.getLastName());
 	    assertEquals(person.getId(), retrievedPerson.getId());
+	}
+	
+	// Verifica se a consulta personalizada JPQL com parâmetro nomeado funciona corretamente.
+	@DisplayName("Given PersonEmail when FindByJPQLNamedParam then Return Person")
+	@Test
+	void testGivenPersonEmail_whenFindByJPQLNamedParam_thenReturnPerson() {
+	    // Given / Arrange
+	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
+	    repository.save(person);
+	    
+	    String email = "fulano@gmail.com";
+	    
+	    // When / Act
+	    // pessoa recuperada pela consulta JPQL com parâmetro nomeado
+	    Person retrievedPerson = repository.findByJPQLNamedParam(email);
+	    
+	    // Then / Assert
+	    assertNotNull(retrievedPerson);
+	    assertEquals(email, retrievedPerson.getEmail());
+	    assertEquals(person.getId(), retrievedPerson.getId());
 	    
 	}
 
