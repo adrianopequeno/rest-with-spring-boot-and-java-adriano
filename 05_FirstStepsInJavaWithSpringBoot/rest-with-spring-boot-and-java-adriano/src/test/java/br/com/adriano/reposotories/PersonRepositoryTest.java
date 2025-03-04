@@ -165,7 +165,28 @@ class PersonRepositoryTest {
 	    assertNotNull(retrievedPerson);
 	    assertEquals(email, retrievedPerson.getEmail());
 	    assertEquals(person.getId(), retrievedPerson.getId());
+	}
+	
+	// Verifica se a consulta personalizada SQL nativa funciona corretamente.
+	@DisplayName("Given PersonName when FindByNativeSQL then Return Person")
+	@Test
+	void testGivenPersonName_whenFindByNativeSQL_thenReturnPerson() {
+	    // Given / Arrange
+	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
+	    repository.save(person);
 	    
+	    String firstName = "Fulano";
+	    String lastName = "da Silva";
+	    
+	    // When / Act
+	    // pessoa recuperada pela consulta SQL nativa
+	    Person retrievedPerson = repository.findByNativeSQL(firstName, lastName);
+	    
+	    // Then / Assert
+	    assertNotNull(retrievedPerson);
+	    assertEquals(firstName, retrievedPerson.getFirstName());
+	    assertEquals(lastName, retrievedPerson.getLastName());
+	    assertEquals(person.getId(), retrievedPerson.getId());
 	}
 
 
