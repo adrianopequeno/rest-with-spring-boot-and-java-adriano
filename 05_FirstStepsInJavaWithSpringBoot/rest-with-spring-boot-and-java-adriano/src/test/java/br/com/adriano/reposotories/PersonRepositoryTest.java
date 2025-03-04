@@ -44,6 +44,7 @@ class PersonRepositoryTest {
 	    Person savedPerson = repository.save(person);
 
 	    // When / Act
+	    // pessoa recuperada pelo ID
 	    Optional<Person> retrievedPerson = repository.findById(savedPerson.getId());
 
 	    // Then / Assert
@@ -60,6 +61,7 @@ class PersonRepositoryTest {
 	    Person savedPerson = repository.save(person);
 	    
 	    // When / Act
+	    // pessoa recuperada pelo email
 	    Optional<Person> retrievedPerson = repository.findByEmail(savedPerson.getEmail());
 	    
 	    // Then / Assert
@@ -119,7 +121,31 @@ class PersonRepositoryTest {
 	    Optional<Person> deletedPerson = repository.findById(savedPerson.getId());
 
 	    // Then / Assert
+	    // Verifica se a pessoa foi removida
 	    assertFalse(deletedPerson.isPresent());
+	}
+	
+	// Verifica se a consulta personalizada JPQL funciona corretamente.
+	@DisplayName("Given PersonName when FindByJPQL then Return Person")
+	@Test
+	void testGivenPersonName_whenFindByJPQL_thenReturnPerson() {
+	    // Given / Arrange
+	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
+	    repository.save(person);
+	    
+	    String firstName = "Fulano";
+	    String lastName = "da Silva";
+	    
+	    // When / Act
+	    // pessoa recuperada pela consulta JPQL
+	    Person retrievedPerson = repository.findByJPQL(firstName, lastName);
+	    
+	    // Then / Assert
+	    assertNotNull(retrievedPerson);
+	    assertEquals(firstName, retrievedPerson.getFirstName());
+	    assertEquals(lastName, retrievedPerson.getLastName());
+	    assertEquals(person.getId(), retrievedPerson.getId());
+	    
 	}
 
 
