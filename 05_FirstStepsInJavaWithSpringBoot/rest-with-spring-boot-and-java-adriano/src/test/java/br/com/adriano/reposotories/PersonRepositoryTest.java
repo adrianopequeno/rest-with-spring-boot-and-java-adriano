@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +21,23 @@ class PersonRepositoryTest {
 	
 	@Autowired
 	private PersonRepository repository;
+	
+	private Person person, person1;
+	
+	@BeforeEach
+	void setUp() {
+		// Given / Arrange
+		person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
+		person1 = new Person("Ciclano", "Pereira", "João Pessoa - Paraiba - Brasil", "Male", "ciclano@gmail.com");
+	}
 
 	@DisplayName("Given PersonObject when Save then Return Saved Person")
 	@Test
 	void testGivenPersonObject_whenSave_thenReturnSavedPerson() {
 		// Given / Arrange
-		Person person0 = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
 		
 		// When / Act
-		Person savedPerson = repository.save(person0);
+		Person savedPerson = repository.save(person);
 		
 		// Then / Assert
 		assertNotNull(savedPerson);
@@ -40,7 +49,6 @@ class PersonRepositoryTest {
 	@Test
 	void testGivenPersonId_whenFindById_thenReturnPerson() {
 	    // Given / Arrange
-	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
 	    Person savedPerson = repository.save(person);
 
 	    // When / Act
@@ -57,7 +65,6 @@ class PersonRepositoryTest {
 	@Test
 	void testGivenPersonEmail_whenFindByEmail_thenReturnPerson() {
 	    // Given / Arrange
-	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil","Male", "fulano@gmail.com");
 	    Person savedPerson = repository.save(person);
 	    
 	    // When / Act
@@ -75,10 +82,8 @@ class PersonRepositoryTest {
 	@Test
 	void testWhenFindAll_thenReturnListOfPersons() {
 	    // Given / Arrange
-	    Person person1 = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
-	    Person person2 = new Person("Ciclano", "Pereira", "João Pessoa - Paraiba - Brasil", "Male", "ciclano@gmail.com");
+	    repository.save(person);
 	    repository.save(person1);
-	    repository.save(person2);
 
 	    // When / Act
 	    List<Person> persons = repository.findAll();
@@ -93,7 +98,6 @@ class PersonRepositoryTest {
 	@Test
 	void testGivenUpdatedPerson_whenSave_thenReturnUpdatedPerson() {
 	    // Given / Arrange
-	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
 	    Person savedPerson = repository.save(person);
 	    
 	    // Atualizando os dados
@@ -113,7 +117,6 @@ class PersonRepositoryTest {
 	@Test
 	void testGivenPersonId_whenDelete_thenPersonIsRemoved() {
 	    // Given / Arrange
-	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
 	    Person savedPerson = repository.save(person);
 
 	    // When / Act
@@ -130,7 +133,6 @@ class PersonRepositoryTest {
 	@Test
 	void testGivenPersonName_whenFindByJPQL_thenReturnPerson() {
 	    // Given / Arrange
-	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
 	    repository.save(person);
 	    
 	    String firstName = "Fulano";
@@ -152,7 +154,6 @@ class PersonRepositoryTest {
 	@Test
 	void testGivenPersonEmail_whenFindByJPQLNamedParam_thenReturnPerson() {
 	    // Given / Arrange
-	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
 	    repository.save(person);
 	    
 	    String email = "fulano@gmail.com";
@@ -172,7 +173,6 @@ class PersonRepositoryTest {
 	@Test
 	void testGivenPersonName_whenFindByNativeSQL_thenReturnPerson() {
 	    // Given / Arrange
-	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
 	    repository.save(person);
 	    
 	    String firstName = "Fulano";
@@ -194,7 +194,6 @@ class PersonRepositoryTest {
 	@Test
 	void testGivenPersonEmail_whenFindByNativeSQLNamedParam_thenReturnPerson() {
 	    // Given / Arrange
-	    Person person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
 	    repository.save(person);
 	    
 	    String email = "fulano@gmail.com";
