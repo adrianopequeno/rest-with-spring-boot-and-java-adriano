@@ -1,10 +1,15 @@
 package br.com.adriano.services;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,16 +34,19 @@ public class PersonServicesTest {
 	private PersonServices services;
 	
 	private Person person;
+	private Person person1;
 	
 	@BeforeEach
 	void setUp() {
 		// Given / Arrange
 		person = new Person();
-		person.setFirstName("Adriano");
+		person.setFirstName("Fulano");
 		person.setLastName("Santana");
 		person.setAddress("Rua 1");
 		person.setGender("Male");
 		person.setEmail("fulano@gmail.com");
+		
+		person1 = new Person("Ciclano", "Araujo", "Recife - Pernambuco - Brasil", "Female", "ciclano@hotmail.com");
 	}
 	
 	@DisplayName("JUnit test for Given Person Object when Save Person then Return Person Object")
@@ -76,5 +84,19 @@ public class PersonServicesTest {
 		// Then / Assert
 		assertEquals("Email already exists: " + person.getEmail(), exception.getMessage());
         verify(repository, never()).save(any(Person.class)); // Garante que o save não foi chamado
+	}
+	
+	@DisplayName("JUnit test Given Persons List when FindAll Persons then Return Person List")
+	@Test
+	void testGivenPersonsList_whenFindAllPersons_thenReturnPersonList() {
+		// Given / Arrange
+		given(repository.findAll()).willReturn(List.of(person, person1));
+		
+		// When / Act
+		List<Person> personsList = services.findAll();
+		
+		// Then / Assert
+		assertNotNull(personsList);
+		assertEquals(2, personsList.size());
 	}
 }
