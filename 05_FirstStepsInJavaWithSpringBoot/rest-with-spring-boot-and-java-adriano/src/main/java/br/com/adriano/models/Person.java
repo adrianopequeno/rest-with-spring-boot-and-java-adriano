@@ -26,15 +26,26 @@ public class Person implements Serializable{
 	private String address;
 	@Column(nullable = false, length = 6)
 	private String gender;
+	@Column(nullable = false, length = 100)
+	private String email;
 	
 	public Person() {}
 	
-	public Person(Long id, String firstName, String lastName, String address, String gender) {
+	public Person(String firstName, String lastName, String address, String gender, String email) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.address = address;
+		this.gender = gender;
+		this.email = email;
+	}
+
+	public Person(Long id, String firstName, String lastName, String address, String gender, String email) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.address = address;
 		this.gender = gender;
+		this.email = email;
 	}
 	
 	public Long getId() {
@@ -77,9 +88,17 @@ public class Person implements Serializable{
 		this.gender = gender;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(address, firstName, gender, id, lastName);
+		return Objects.hash(address, email, firstName, gender, id, lastName);
 	}
 
 	@Override
@@ -91,9 +110,9 @@ public class Person implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Person other = (Person) obj;
-		return Objects.equals(address, other.address) && Objects.equals(firstName, other.firstName)
-				&& Objects.equals(gender, other.gender) && Objects.equals(id, other.id)
-				&& Objects.equals(lastName, other.lastName);
+		return Objects.equals(address, other.address) && Objects.equals(email, other.email)
+				&& Objects.equals(firstName, other.firstName) && Objects.equals(gender, other.gender)
+				&& Objects.equals(id, other.id) && Objects.equals(lastName, other.lastName);
 	}
 
 }
