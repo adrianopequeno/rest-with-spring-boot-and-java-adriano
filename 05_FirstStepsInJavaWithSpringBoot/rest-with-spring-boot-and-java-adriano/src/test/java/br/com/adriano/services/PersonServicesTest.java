@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -114,5 +115,20 @@ public class PersonServicesTest {
 		// Then / Assert
 		assertTrue(personsList.isEmpty());
 		assertEquals(0, personsList.size());
+	}
+	
+	@DisplayName("JUnit test for a given person id when findaById then return person object")
+	@Test
+	void testGivenPersonId_whenFindById_thenReturnPersonObject() {
+		// Given / Arrange
+		given(repository.findById(anyLong())).willReturn(Optional.of(person));
+		
+		// When / Act
+		Person savedPerson = services.findById(1L);
+		
+		// Then / Assert
+		assertNotNull(savedPerson);
+		assertEquals(person.getId(), savedPerson.getId());
+		assertEquals(person.getFirstName(), savedPerson.getFirstName());
 	}
 }
