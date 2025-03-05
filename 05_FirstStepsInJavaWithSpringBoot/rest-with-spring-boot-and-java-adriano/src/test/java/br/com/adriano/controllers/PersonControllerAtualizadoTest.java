@@ -1,11 +1,16 @@
 package br.com.adriano.controllers;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -75,6 +80,22 @@ class PersonControllerAtualizadoTest {
 			.andExpect(jsonPath("$.lastName").value(person.getLastName()))
 			.andExpect(jsonPath("$.address").value(person.getAddress()));
 	}
-
+	
+	@Test
+	@DisplayName("JUnit test Given of Persons when findAll Persons then Return Persons List")
+	void testGivenListOfPersons_WhenFindAllPersons_thenReturnPersonList() throws JsonProcessingException, Exception {
+		// Given / Arrange
+		List<Person> persons = Arrays.asList(person, person1);
+		given(service.findAll()).willReturn(persons);
+		
+		// When / Act
+		ResultActions response = mockMvc.perform(get("/person"));
+		
+		// Then / Assert
+		response.andExpect(status().isOk())
+			.andDo(print())
+			.andExpect(jsonPath("$.size()", is(persons.size())));
+	}
+		
 	
 }
