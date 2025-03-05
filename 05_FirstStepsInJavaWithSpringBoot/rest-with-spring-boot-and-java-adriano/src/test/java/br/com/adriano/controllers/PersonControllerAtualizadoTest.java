@@ -2,6 +2,7 @@ package br.com.adriano.controllers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -9,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -33,7 +36,9 @@ import br.com.adriano.services.PersonServices;
 @ExtendWith(MockitoExtension.class) // Habilita mocks sem precisar do contexto Spring
 class PersonControllerAtualizadoTest {
 	
+	@Autowired
 	private MockMvc mockMvc;
+	@Autowired
 	private ObjectMapper mapper;
 	
 	@Mock
@@ -85,7 +90,8 @@ class PersonControllerAtualizadoTest {
 	@DisplayName("JUnit test Given of Persons when findAll Persons then Return Persons List")
 	void testGivenListOfPersons_WhenFindAllPersons_thenReturnPersonList() throws JsonProcessingException, Exception {
 		// Given / Arrange
-		List<Person> persons = Arrays.asList(person, person1);
+		List<Person> persons = new ArrayList<>();
+		persons.addAll(Arrays.asList(person, person1));
 		given(service.findAll()).willReturn(persons);
 		
 		// When / Act
@@ -97,5 +103,22 @@ class PersonControllerAtualizadoTest {
 			.andExpect(jsonPath("$.size()", is(persons.size())));
 	}
 		
-	
+	@Test
+	@DisplayName("JUnit test Given Person ID when findById then Return Person Object")
+	void testGivenPersonId_WhenFindById_thenReturnPersonObject() throws JsonProcessingException, Exception {
+		// Given / Arrange
+		long personId = 1L;
+		given(service.findById(anyLong())).willReturn(person);
+		
+		// When / Act
+		ResultActions response = mockMvc.perform(get("/person/{id}", personId));
+				
+		// Then / Assert
+		response
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andExpect(jsonPath("$.firstName", is(person.getFirstName())))
+			.andExpect(jsonPath("$.lastName", is(person.getLastName())))
+			.andExpect(jsonPath("$.address", is(person.getAddress())));
+	}
 }

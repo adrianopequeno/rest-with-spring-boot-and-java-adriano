@@ -2,6 +2,7 @@ package br.com.adriano.controllers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -91,4 +92,22 @@ public class PersonControllerTest {
 			.andExpect(jsonPath("$.size()", is(persons.size())));
 	}
 
+	@Test
+	@DisplayName("JUnit test Given Person ID when findById then Return Person Object")
+	void testGivenPersonId_WhenFindById_thenReturnPersonObject() throws JsonProcessingException, Exception {
+		// Given / Arrange
+		long personId = 1L;
+		given(service.findById(anyLong())).willReturn(person);
+		
+		// When / Act
+		ResultActions response = mockMvc.perform(get("/person/{id}", personId));
+				
+		// Then / Assert
+		response
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andExpect(jsonPath("$.firstName", is(person.getFirstName())))
+			.andExpect(jsonPath("$.lastName", is(person.getLastName())))
+			.andExpect(jsonPath("$.address", is(person.getAddress())));
+	}
 }
