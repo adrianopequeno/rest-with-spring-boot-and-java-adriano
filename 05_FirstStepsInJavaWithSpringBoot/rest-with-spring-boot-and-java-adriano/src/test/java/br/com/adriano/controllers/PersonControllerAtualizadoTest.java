@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.adriano.exceptions.ResourceNotFoundException;
 import br.com.adriano.models.Person;
 import br.com.adriano.services.PersonServices;
 
@@ -120,5 +121,21 @@ class PersonControllerAtualizadoTest {
 			.andExpect(jsonPath("$.firstName", is(person.getFirstName())))
 			.andExpect(jsonPath("$.lastName", is(person.getLastName())))
 			.andExpect(jsonPath("$.address", is(person.getAddress())));
+	}
+	
+	@Test
+	@DisplayName("JUnit test Given Invalid Person ID when findById then Return Not Found")
+	void testGivenInvalidPersonId_WhenFindById_thenReturnNotFound() throws JsonProcessingException, Exception {
+		// Given / Arrange
+		long personId = 1L;
+		given(service.findById(personId)).willThrow(ResourceNotFoundException.class);
+		
+		// When / Act
+		ResultActions response = mockMvc.perform(get("/person/{id}", personId));
+		
+		// Then / Assert
+		response
+		.andExpect(status().isNotFound())
+		.andDo(print());
 	}
 }
