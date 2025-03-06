@@ -1,11 +1,21 @@
 package br.com.adriano.integrationtests.controllers;
 
+import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.adriano.config.TestConfig;
@@ -26,19 +36,56 @@ class PersonControllerIntegrationTest extends AbstractIntegrationTest {
 	private static Person person;
 	
 	@BeforeAll
-	void setUp() {
+	public static void setUp() {
 		// Given / Arrange
 		objectMapper = new ObjectMapper();
 		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		
 		specification = new RequestSpecBuilder()
-				.setBaseUri("")
+				.setBasePath("/person")
 				.setPort(TestConfig.SERVER_PORT)
 				.addFilter(new RequestLoggingFilter(LogDetail.ALL))
 				.addFilter(new ResponseLoggingFilter(LogDetail.ALL))
 				.build();
 		
 		person = new Person("Fulano", "da Silva", "Patos - Paraiba - Brasil", "Male", "fulano@gmail.com");
+	}
+	
+	@Test
+	@Order(1)
+	@DisplayName("JUnit integration Test Given Person Object when Create One Person Should Return Person Object")
+	void integrationTestGivenPersonObject_when_CreateOndePerson_ShouldReturnPersonObject() throws JsonMappingException, JsonProcessingException {
+		
+		var content = given()
+				.spec(specification)
+				.contentType(TestConfig.CONTENT_TYPE_JSON)
+				.body(person)
+				.when()
+					.post()
+				.then()
+					.statusCode(200)
+						.extract()
+							.body()
+								.asString();
+		
+		Person createdPerson = objectMapper.readValue(content, Person.class);
+		
+		person = createdPerson;
+		
+		assertNotNull(createdPerson);
+		assertNotNull(createdPerson.getId());
+		assertNotNull(createdPerson.getFirstName());
+		assertNotNull(createdPerson.getLastName());
+		assertNotNull(createdPerson.getAddress());
+		assertNotNull(createdPerson.getGender());
+		assertNotNull(createdPerson.getEmail());
+		
+		assertTrue(createdPerson.getId() > 0);
+		assertEquals("Fulano", createdPerson.getFirstName());
+		assertEquals("da Silva", createdPerson.getLastName());
+		assertEquals("Patos - Paraiba - Brasil", createdPerson.getAddress());
+		assertEquals("Male", createdPerson.getGender());
+		assertEquals("fulano@gmail.com", createdPerson.getEmail());
 	}
 
 }
