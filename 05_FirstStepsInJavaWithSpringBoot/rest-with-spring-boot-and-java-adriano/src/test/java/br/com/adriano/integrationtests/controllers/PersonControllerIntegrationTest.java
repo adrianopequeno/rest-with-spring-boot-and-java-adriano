@@ -5,6 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -158,6 +161,78 @@ class PersonControllerIntegrationTest extends AbstractIntegrationTest {
 		assertEquals("Patos - Paraiba - Brasil", foundPerson.getAddress());
 		assertEquals("Male", foundPerson.getGender());
 		assertEquals("ciclano@teste.com.br", foundPerson.getEmail());
+	}
+	
+	@Test
+	@Order(3)
+	@DisplayName("JUnit integration Test Given Persons Object when findAll Should Return a Persons List")
+	void integrationTestGivenPersonsObject_when_FindAll_ShouldReturnAPersonsList() throws JsonMappingException, JsonProcessingException {
+		
+		// instacio uma nova pessoa
+		Person anotherPerson = new Person("Beltrano", "da Silva", "Patos - Paraiba - Brasil", "Female", "bel@hotmail.com");
+		
+		// crio uma nova pessoa
+		given().spec(specification)
+			.contentType(TestConfig.CONTENT_TYPE_JSON)
+			.body(anotherPerson)
+			.when()
+				.post()
+			.then()
+				.statusCode(200);
+		
+		// recupero a lista de pessoas
+		var content = given().spec(specification)
+				.when()
+					.get()
+				.then()
+					.statusCode(200)
+						.extract()
+							.body()
+								.asString();
+		
+		// converto a lista de pessoas para um array
+		Person[] myArray = objectMapper.readValue(content, Person[].class);
+		
+		// converto o array para uma lista de pessoas
+		List<Person> peaples = Arrays.asList(myArray);
+		
+		// verifico se a lista de pessoas não está vazia
+		assertNotNull(peaples);
+		assertTrue(peaples.size() > 0);
+		
+		Person foundPersonOne = peaples.get(0);
+		assertNotNull(foundPersonOne);
+		assertNotNull(foundPersonOne.getId());
+		assertNotNull(foundPersonOne.getFirstName());
+		assertNotNull(foundPersonOne.getLastName());
+		assertNotNull(foundPersonOne.getAddress());
+		assertNotNull(foundPersonOne.getGender());
+		assertNotNull(foundPersonOne.getEmail());
+		
+		assertTrue(foundPersonOne.getId() > 0);
+		assertEquals("Ciclano", foundPersonOne.getFirstName());
+		assertEquals("da Silva", foundPersonOne.getLastName());
+		assertEquals("Patos - Paraiba - Brasil", foundPersonOne.getAddress());
+		assertEquals("Male", foundPersonOne.getGender());
+		assertEquals("ciclano@teste.com.br", foundPersonOne.getEmail());
+		
+		// verifico se a lista de pessoas contém a pessoa que criei
+		Person foundPersonTwo = peaples.get(1);
+		assertNotNull(foundPersonTwo);
+		assertNotNull(foundPersonTwo.getId());
+		assertNotNull(foundPersonTwo.getFirstName());
+		assertNotNull(foundPersonTwo.getLastName());
+		assertNotNull(foundPersonTwo.getAddress());
+		assertNotNull(foundPersonTwo.getGender());
+		assertNotNull(foundPersonTwo.getEmail());
+		
+		assertTrue(foundPersonTwo.getId() > 0);
+		assertEquals("Beltrano", foundPersonTwo.getFirstName());
+		assertEquals("da Silva", foundPersonTwo.getLastName());
+		assertEquals("Patos - Paraiba - Brasil", foundPersonTwo.getAddress());
+		assertEquals("Female", foundPersonTwo.getGender());
+		assertEquals("bel@hotmail.com", foundPersonTwo.getEmail());
+		
 	}
 
 }
