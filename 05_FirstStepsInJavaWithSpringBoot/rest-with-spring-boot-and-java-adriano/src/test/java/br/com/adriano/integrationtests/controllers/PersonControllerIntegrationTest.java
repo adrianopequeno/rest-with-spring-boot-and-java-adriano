@@ -164,7 +164,7 @@ class PersonControllerIntegrationTest extends AbstractIntegrationTest {
 	}
 	
 	@Test
-	@Order(3)
+	@Order(4)
 	@DisplayName("JUnit integration Test Given Persons Object when findAll Should Return a Persons List")
 	void integrationTestGivenPersonsObject_when_FindAll_ShouldReturnAPersonsList() throws JsonMappingException, JsonProcessingException {
 		
@@ -232,7 +232,18 @@ class PersonControllerIntegrationTest extends AbstractIntegrationTest {
 		assertEquals("Patos - Paraiba - Brasil", foundPersonTwo.getAddress());
 		assertEquals("Female", foundPersonTwo.getGender());
 		assertEquals("bel@hotmail.com", foundPersonTwo.getEmail());
-		
 	}
 
+	@Test
+	@Order(5)
+	@DisplayName("JUnit integration Test Given Person Object when delete Should Return Not Found")
+	void integrationTestGivenPersonObject_when_delete_ShouldReturnNotFound() throws JsonMappingException, JsonProcessingException {
+		
+		given().spec(specification)
+				.pathParam("id", person.getId())
+				.when()
+					.delete("{id}")
+				.then()
+					.statusCode(204);
+	}
 }
